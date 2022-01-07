@@ -66,8 +66,12 @@ class View extends FlxSprite {
         FlxSpriteUtil.drawRect( this, 0, 0, 1024, 768, FlxColor.BLACK );
     }
     public
+    function background( color: FlxColor ){
+        FlxSpriteUtil.drawRect( this, 0, 0, 1024, 768, color );
+    }
+    public
     function clear(){
-         makeGraphic( 1024, 768, FlxColor.TRANSPARENT, true );
+        makeGraphic( 1024, 768, FlxColor.TRANSPARENT, true );
     }
     public
     function circle( p: { x: Float, y: Float }
