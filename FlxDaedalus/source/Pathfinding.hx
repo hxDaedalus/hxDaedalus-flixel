@@ -16,6 +16,7 @@ import hxDaedalus.flx.View;
 class Pathfinding extends FlxState {
     var _mesh : Mesh;
     var _view : View;
+    var _viewEntity: View;
     var _entityAI : EntityAI;
     var _pathfinder : PathFinder;
     var _path : Array<Float>;
@@ -29,6 +30,8 @@ class Pathfinding extends FlxState {
         // create viewports
         _view = new View( 0, 0 );
         add( _view );
+        _viewEntity = new View( 0, 0 );
+        add( _viewEntity );
         // build a rectangular 2 polygons mesh of 600x600
         _mesh = RectMesh.buildRectangle(600, 600);
         // pseudo random generator
@@ -78,16 +81,22 @@ class Pathfinding extends FlxState {
         _pathSampler.samplingDistance = 10;
         _pathSampler.path = _path;
     }
+    var meshOnce: Bool = false;
     inline function renderDaedalus(){
         // show result mesh on screen
-        _view.drawMesh( _mesh );
+        // only draw first time
+        if( !meshOnce ){
+            _view.whiteBackground();
+            _view.drawMesh( _mesh );
+            meshOnce = true;
+        }
         if( _newPath ){
             // find path !
             _pathfinder.findPath( x, y, _path );
             // show path on screen
-            _view.drawPath( _path );
+            _viewEntity.drawPath( _path );
              // show entity position on screen
-            _view.drawEntity( _entityAI ); 
+            _viewEntity.drawEntity( _entityAI ); 
             // reset the path sampler to manage new generated path
             _pathSampler.reset();
         }
@@ -97,7 +106,7 @@ class Pathfinding extends FlxState {
             _pathSampler.next();
         }
         // show entity position on screen
-        _view.drawEntity( _entityAI );
+        _viewEntity.drawEntity( _entityAI );
     }
     override public function update( elapsed: Float ){
         super.update(elapsed);
@@ -119,7 +128,7 @@ class Pathfinding extends FlxState {
             y = FlxG.mouse.y;
             _newPath = false;
         }
-        _view.clear();
+        _viewEntity.clear();
         renderDaedalus();
     }
 }

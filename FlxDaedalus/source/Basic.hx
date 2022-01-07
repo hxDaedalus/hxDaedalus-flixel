@@ -61,7 +61,7 @@ class Basic extends FlxState {
     override public function update(elapsed:Float)
     {
         super.update(elapsed);
-        _view.clear();
+        _view.whiteBackground();
         _object.rotation += 0.05;
         _mesh.updateObjects();  // don't forget to update
         _view.drawMesh( _mesh );

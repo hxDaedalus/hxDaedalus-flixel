@@ -920,7 +920,7 @@ ApplicationMain.main = function() {
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
 	ManifestResources.init(config);
-	app.meta.h["build"] = "2";
+	app.meta.h["build"] = "4";
 	app.meta.h["company"] = "HaxeFlixel";
 	app.meta.h["file"] = "FlxDaedalus";
 	app.meta.h["name"] = "FlxDaedalus";
@@ -4780,6 +4780,7 @@ _$_$ASSET_$_$OPENFL_$_$flixel_$fonts_$monsterrat_$ttf.prototype = $extend(openfl
 });
 Math.__name__ = "Math";
 var Pathfinding = function(MaxSize) {
+	this.meshOnce = false;
 	this.y = 0;
 	this.x = 0;
 	this._newPath = false;
@@ -4791,6 +4792,7 @@ Pathfinding.__super__ = flixel_FlxState;
 Pathfinding.prototype = $extend(flixel_FlxState.prototype,{
 	_mesh: null
 	,_view: null
+	,_viewEntity: null
 	,_entityAI: null
 	,_pathfinder: null
 	,_path: null
@@ -4802,6 +4804,8 @@ Pathfinding.prototype = $extend(flixel_FlxState.prototype,{
 		flixel_FlxState.prototype.create.call(this);
 		this._view = new hxDaedalus_flx_View(0,0);
 		this.add(this._view);
+		this._viewEntity = new hxDaedalus_flx_View(0,0);
+		this.add(this._viewEntity);
 		this._mesh = hxDaedalus_factories_RectMesh.buildRectangle(600,600);
 		var randGen = new hxDaedalus_data_math_RandGenerator();
 		randGen.set_seed(7259);
@@ -4840,18 +4844,23 @@ Pathfinding.prototype = $extend(flixel_FlxState.prototype,{
 		this._pathSampler.set_samplingDistance(10);
 		this._pathSampler.set_path(this._path);
 	}
+	,meshOnce: null
 	,renderDaedalus: function() {
-		this._view.drawMesh(this._mesh);
+		if(!this.meshOnce) {
+			this._view.whiteBackground();
+			this._view.drawMesh(this._mesh);
+			this.meshOnce = true;
+		}
 		if(this._newPath) {
 			this._pathfinder.findPath(this.x,this.y,this._path);
-			this._view.drawPath(this._path);
-			this._view.drawEntity(this._entityAI);
+			this._viewEntity.drawPath(this._path);
+			this._viewEntity.drawEntity(this._entityAI);
 			this._pathSampler.reset();
 		}
 		if(this._pathSampler.get_hasNext()) {
 			this._pathSampler.next();
 		}
-		this._view.drawEntity(this._entityAI);
+		this._viewEntity.drawEntity(this._entityAI);
 	}
 	,update: function(elapsed) {
 		flixel_FlxState.prototype.update.call(this,elapsed);
@@ -4870,22 +4879,27 @@ Pathfinding.prototype = $extend(flixel_FlxState.prototype,{
 			this.y = flixel_FlxG.mouse.y;
 			this._newPath = false;
 		}
-		this._view.clear();
-		this._view.drawMesh(this._mesh);
+		this._viewEntity.clear();
+		if(!this.meshOnce) {
+			this._view.whiteBackground();
+			this._view.drawMesh(this._mesh);
+			this.meshOnce = true;
+		}
 		if(this._newPath) {
 			this._pathfinder.findPath(this.x,this.y,this._path);
-			this._view.drawPath(this._path);
-			this._view.drawEntity(this._entityAI);
+			this._viewEntity.drawPath(this._path);
+			this._viewEntity.drawEntity(this._entityAI);
 			this._pathSampler.reset();
 		}
 		if(this._pathSampler.get_hasNext()) {
 			this._pathSampler.next();
 		}
-		this._view.drawEntity(this._entityAI);
+		this._viewEntity.drawEntity(this._entityAI);
 	}
 	,__class__: Pathfinding
 });
 var PathfindingMaze = function(MaxSize) {
+	this.meshOnce = false;
 	this.cols = 15;
 	this.rows = 15;
 	this.y = 0;
@@ -4899,6 +4913,8 @@ PathfindingMaze.__super__ = flixel_FlxState;
 PathfindingMaze.prototype = $extend(flixel_FlxState.prototype,{
 	_mesh: null
 	,_view: null
+	,_viewEntity: null
+	,_entity: null
 	,_entityAI: null
 	,_pathfinder: null
 	,_path: null
@@ -4911,7 +4927,9 @@ PathfindingMaze.prototype = $extend(flixel_FlxState.prototype,{
 	,create: function() {
 		flixel_FlxState.prototype.create.call(this);
 		this._view = new hxDaedalus_flx_View(0,0);
+		this._viewEntity = new hxDaedalus_flx_View(0,0);
 		this.add(this._view);
+		this.add(this._viewEntity);
 		this._mesh = hxDaedalus_factories_RectMesh.buildRectangle(600,600);
 		hxDaedalus_GridMaze.generate(600,600,this.cols,this.rows);
 		this._mesh.insertObject(hxDaedalus_GridMaze.object);
@@ -4951,18 +4969,23 @@ PathfindingMaze.prototype = $extend(flixel_FlxState.prototype,{
 		this._path = [];
 		this._pathSampler.set_path(this._path);
 	}
+	,meshOnce: null
 	,renderDaedalus: function() {
-		this._view.drawMesh(this._mesh);
+		if(!this.meshOnce) {
+			this._view.whiteBackground();
+			this._view.drawMesh(this._mesh);
+			this.meshOnce = true;
+		}
 		if(this._newPath) {
 			this._pathfinder.findPath(this.x,this.y,this._path);
-			this._view.drawPath(this._path);
-			this._view.drawEntity(this._entityAI);
+			this._viewEntity.drawPath(this._path);
+			this._viewEntity.drawEntity(this._entityAI);
 			this._pathSampler.reset();
 		}
 		if(this._pathSampler.get_hasNext()) {
 			this._pathSampler.next();
 		}
-		this._view.drawEntity(this._entityAI);
+		this._viewEntity.drawEntity(this._entityAI);
 	}
 	,update: function(elapsed) {
 		flixel_FlxState.prototype.update.call(this,elapsed);
@@ -4981,18 +5004,22 @@ PathfindingMaze.prototype = $extend(flixel_FlxState.prototype,{
 			this.y = flixel_FlxG.mouse.y;
 			this._newPath = false;
 		}
-		this._view.clear();
-		this._view.drawMesh(this._mesh);
+		this._viewEntity.clear();
+		if(!this.meshOnce) {
+			this._view.whiteBackground();
+			this._view.drawMesh(this._mesh);
+			this.meshOnce = true;
+		}
 		if(this._newPath) {
 			this._pathfinder.findPath(this.x,this.y,this._path);
-			this._view.drawPath(this._path);
-			this._view.drawEntity(this._entityAI);
+			this._viewEntity.drawPath(this._path);
+			this._viewEntity.drawEntity(this._entityAI);
 			this._pathSampler.reset();
 		}
 		if(this._pathSampler.get_hasNext()) {
 			this._pathSampler.next();
 		}
-		this._view.drawEntity(this._entityAI);
+		this._viewEntity.drawEntity(this._entityAI);
 	}
 	,__class__: PathfindingMaze
 });
@@ -54943,8 +54970,14 @@ hxDaedalus_flx_View.prototype = $extend(flixel_FlxSprite.prototype,{
 	,faceWidth: null
 	,faceAlpha: null
 	,faceToEdgeIter: null
-	,clear: function() {
+	,whiteBackground: function() {
 		flixel_util_FlxSpriteUtil.drawRect(this,0,0,1024,768,-1);
+	}
+	,blackBackground: function() {
+		flixel_util_FlxSpriteUtil.drawRect(this,0,0,1024,768,-16777216);
+	}
+	,clear: function() {
+		this.makeGraphic(1024,768,0,true);
 	}
 	,circle: function(p,radius,color,alpha) {
 		if(alpha == null) {
@@ -70926,7 +70959,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 723975;
+	this.version = 185400;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
