@@ -11,5 +11,3 @@ to switch versions when compiling just change the enum used in the Main class.
 ```
 var currentDemo = MAZE;
 ```
-
-Compared to other toolkit solutions this currently seems heavy to render, open to improvements and pull requests.
