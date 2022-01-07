@@ -1,0 +1,2 @@
+-cmd npx kill-port 3000
+-cmd lime test html5
